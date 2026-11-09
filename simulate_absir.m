@@ -24,7 +24,7 @@ function [Sh, Ih, Rh] = simulate_absir(M, Iv0, T, infection_rate, recovery_rate)
     Ih(:, 1) = Iv0; % Record the initial state to infection history
     Rh = zeros(dim, T); % Recovery history
     
-    % Construct an "action" helper function
+    % Construct an "action" helper function 
     function [I, R] = action(I, R)
         % Compute infection probabilities based on the social graph
         v_eff = infection_rate * M * I;
