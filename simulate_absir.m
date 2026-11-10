@@ -1,4 +1,4 @@
-function [Sh, Ih, Rh] = simulate_absir(M, Iv0, T, infection_rate, recovery_rate)
+function [Sh, Ih, Rh, tDetect] = simulate_absir(M, Iv0, T, infection_rate, recovery_rate, country, delay)
 % Simulate agent-based transmission model. Uses a graph to represent social
 % connectivity between agents.
 % 
@@ -42,8 +42,23 @@ function [Sh, Ih, Rh] = simulate_absir(M, Iv0, T, infection_rate, recovery_rate)
     end
 
     % Run simulation
+
+    tDetect = NaN;
+    origin = country(find(Iv0, 1));
+    Mintra = M .* (country == country');
+
     for i = 2:T
+
+        
         [Ih(:, i), Rh(:, i)] = action(Ih(:, i-1), Rh(:, i-1));
+
+        if isnan(tDetect) && any(Ih(country ~= origin, i)) % test if anyone ouside of the country is infected
+            tDetect = i;
+        end
+
+        if ~isnan(tDetect) && i >= tDetect + delay
+            M = Mintra; % close border if over delay
+        end
     end
     
     % Compute susceptible history
