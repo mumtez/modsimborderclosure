@@ -48,14 +48,17 @@ function [Sh, Ih, Rh, tDetect] = simulate_absir(M, Iv0, T, infection_rate, recov
     Mintra = M .* (country == country');
 
     for i = 2:T
+
+        
+        [Ih(:, i), Rh(:, i)] = action(Ih(:, i-1), Rh(:, i-1));
+
         if isnan(tDetect) && any(Ih(country ~= origin, i)) % test if anyone ouside of the country is infected
             tDetect = i;
         end
-        
+
         if ~isnan(tDetect) && i >= tDetect + delay
             M = Mintra; % close border if over delay
         end
-        [Ih(:, i), Rh(:, i)] = action(Ih(:, i-1), Rh(:, i-1));
     end
     
     % Compute susceptible history
